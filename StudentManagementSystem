@@ -1,0 +1,104 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class Student {
+private:
+    string name;
+    int rollNumber;
+    float marks;
+
+public:
+    void setData() {
+        cout << "Enter name: ";
+        cin.ignore();
+        getline(cin, name);
+        cout << "Enter roll number: ";
+        cin >> rollNumber;
+        cout << "Enter marks: ";
+        cin >> marks;
+    }
+
+    void displayData() const {
+        cout << "Name: " << name << endl;
+        cout << "Roll Number: " << rollNumber << endl;
+        cout << "Marks: " << marks << endl;
+    }
+
+    void saveToFile(ofstream &file) const {
+        file << name << endl;
+        file << rollNumber << endl;
+        file << marks << endl;
+    }
+
+    void loadFromFile(ifstream &file) {
+        getline(file, name);
+        file >> rollNumber;
+        file >> marks;
+        file.ignore(); 
+    }
+};
+
+int main() {
+    cout << "                       STUDENT MANAGEMENT PROGRAM"<<endl;
+    cout << "Name Saral Jain" << endl;
+    Student s;
+    int choice;
+    char ch;
+
+    do {
+        cout << "1. Add Student" << endl;
+        cout << "2. Display Students" << endl;
+        cout << "3. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                s.setData();
+                ofstream file("student.txt", ios::app);
+                if (file.is_open()) {
+                    s.saveToFile(file);
+                    file.close();
+                    cout << "Student data saved to file." << endl;
+                } else {
+                    cout << "Unable to open file for writing." << endl;
+                }
+                break;
+            }
+
+            case 2: {
+                ifstream file("student.txt");
+                if (!file.is_open()) {
+                    cout << "File not found." << endl;
+                    break;
+                }
+                while (!file.eof()) {
+                    s.loadFromFile(file);
+                    if (file.eof()) break;
+                    s.displayData();
+                }
+                file.close();
+                break;
+            }
+
+            case 3:
+                cout << "Exiting..." << endl;
+                break;
+
+            default:
+                cout << "Invalid choice. Try again." << endl;
+        }
+
+        if (choice != 3) {
+            cout << "Do you want to continue? (y/n): ";
+            cin >> ch;
+        } else {
+            ch = 'n';
+        }
+
+    } while (ch == 'y' || ch == 'Y');
+
+    return 0;
+}
